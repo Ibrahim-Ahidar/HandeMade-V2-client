@@ -62,8 +62,7 @@ export default function Profile() {
     loadProfile();
   }, [loadProfile]);
 
-  const handleSave = async (e) => {
-    e?.preventDefault();
+  const handleSave = async () => {
     setSaving(true);
     try {
       const payload = {
@@ -164,21 +163,16 @@ export default function Profile() {
               Your avatar uses the first letter of your username, or email if needed.
             </p>
 
-            <form className="mt-6 space-y-5" onSubmit={handleSave}>
+            <div className="mt-6 space-y-5">
               <div className="grid gap-5 sm:grid-cols-2">
                 <Input label="Username" value={user.username} disabled readOnly />
                 <Input label="Email" type="email" value={user.email} disabled readOnly />
               </div>
 
-              <div className="flex flex-col gap-3 border-t border-border pt-6 sm:flex-row sm:items-center sm:justify-between">
-                <p className="text-sm text-text-secondary">
-                  Account details are managed securely and cannot be changed here.
-                </p>
-                <Button type="submit" variant="warm" size="md" disabled={saving} className="sm:min-w-[140px]">
-                  {saving ? "Saving…" : "Save changes"}
-                </Button>
-              </div>
-            </form>
+              <p className="border-t border-border pt-6 text-sm text-text-secondary">
+                Account details are managed securely and cannot be changed here.
+              </p>
+            </div>
           </Card>
 
           <Card className="p-6 md:p-8">
