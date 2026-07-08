@@ -1,5 +1,5 @@
-import { memo } from "react";
-import { GoogleLogin } from "@react-oauth/google";
+import { memo, useEffect, useRef } from "react";
+import { useGoogleOAuth } from "@react-oauth/google";
 import { cn } from "../../utils/cn";
 
 function GoogleIcon() {
@@ -13,30 +13,84 @@ function GoogleIcon() {
   );
 }
 
-function GoogleAuthButton({ onSuccess, onError, label = "Continue with Google", compact = false, className }) {
-  const triggerGoogle = () => {
-    const googleBtn = document.querySelector('[data-google-login="true"] div[role="button"]');
-    googleBtn?.click();
+function GoogleAuthButton({
+  onSuccess,
+  onError,
+  label = "Continue with Google",
+  compact = false,
+  className,
+}) {
+  const { scriptLoadedSuccessfully } = useGoogleOAuth();
+  const containerRef = useRef(null);
+  const onSuccessRef = useRef(onSuccess);
+  const onErrorRef = useRef(onError);
+  const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+  const ready = scriptLoadedSuccessfully && Boolean(clientId);
+
+  useEffect(() => {
+    onSuccessRef.current = onSuccess;
+    onErrorRef.current = onError;
+  }, [onSuccess, onError]);
+
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!ready || !el || !window.google?.accounts?.id) return undefined;
+
+    el.innerHTML = "";
+
+    window.google.accounts.id.initialize({
+      client_id: clientId,
+      callback: (response) => {
+        if (response?.credential) {
+          onSuccessRef.current?.(response);
+          return;
+        }
+        onErrorRef.current?.();
+      },
+      ux_mode: "popup",
+      cancel_on_tap_outside: true,
+    });
+
+    window.google.accounts.id.renderButton(el, {
+      type: "standard",
+      theme: "outline",
+      size: "large",
+      text: "continue_with",
+      width: el.parentElement?.offsetWidth || 320,
+    });
+
+    return () => {
+      el.innerHTML = "";
+    };
+  }, [ready, clientId]);
+
+  const handleUnavailableClick = () => {
+    if (!ready) onErrorRef.current?.();
   };
 
   return (
-    <>
-      <div className="sr-only" data-google-login="true" aria-hidden="true">
-        <GoogleLogin onSuccess={onSuccess} onError={onError ?? (() => {})} />
-      </div>
-      <button
-        type="button"
-        onClick={triggerGoogle}
+    <div
+      className={cn("relative w-full", !ready && "cursor-not-allowed opacity-70", className)}
+      onClick={handleUnavailableClick}
+    >
+      <div
+        ref={containerRef}
         className={cn(
-          "flex w-full items-center justify-center gap-2.5 rounded-xl border border-border bg-bg-elevated px-4 text-sm font-medium text-text-primary shadow-sm transition hover:bg-bg-muted active:scale-[0.99]",
-          compact ? "py-2.5" : "py-3 hover:scale-[1.01]",
-          className
+          "absolute inset-0 z-10 overflow-hidden opacity-0",
+          ready ? "cursor-pointer" : "pointer-events-none"
+        )}
+        aria-hidden="true"
+      />
+      <div
+        className={cn(
+          "pointer-events-none flex w-full items-center justify-center gap-2.5 rounded-xl border border-border bg-bg-elevated px-4 text-sm font-medium text-text-primary shadow-sm transition hover:bg-bg-muted",
+          compact ? "py-2.5" : "py-3"
         )}
       >
         <GoogleIcon />
         {label}
-      </button>
-    </>
+      </div>
+    </div>
   );
 }
 
