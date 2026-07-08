@@ -1,0 +1,67 @@
+/* Craft × Command — semantic tokens (light default) */
+:root {
+  --bg-primary: #fafaf9;
+  --bg-elevated: #ffffff;
+  --bg-muted: #f5f0eb;
+  --accent: #5e6ad2;
+  --accent-hover: #4e5ac2;
+  --accent-warm: #c4a882;
+  --text-primary: #171717;
+  --text-secondary: #6b6b6b;
+  --border: rgba(0, 0, 0, 0.08);
+  --success: #22c55e;
+  --danger: #ef4444;
+  --shadow-soft: 0 4px 24px rgba(0, 0, 0, 0.06);
+  --shadow-elevated: 0 8px 40px rgba(0, 0, 0, 0.1);
+  --glass: rgba(255, 255, 255, 0.72);
+  --glass-border: rgba(255, 255, 255, 0.35);
+
+  --space-section: 6rem;
+  --space-section-lg: 8rem;
+  --nav-app-height: 3.5rem;
+}
+
+.dark {
+  --bg-primary: #0a0a0b;
+  --bg-elevated: #141415;
+  --bg-muted: #1c1c1e;
+  --accent: #5e6ad2;
+  --accent-hover: #6b77e0;
+  --accent-warm: #c4a882;
+  --text-primary: #fafafa;
+  --text-secondary: #a1a1a1;
+  --border: rgba(255, 255, 255, 0.08);
+  --shadow-soft: 0 4px 24px rgba(0, 0, 0, 0.35);
+  --shadow-elevated: 0 8px 40px rgba(0, 0, 0, 0.45);
+  --glass: rgba(20, 20, 21, 0.75);
+  --glass-border: rgba(255, 255, 255, 0.1);
+}
+
+@theme {
+  --color-bg-primary: var(--bg-primary);
+  --color-bg-elevated: var(--bg-elevated);
+  --color-bg-muted: var(--bg-muted);
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-warm: var(--accent-warm);
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-border: var(--border);
+  --color-success: var(--success);
+  --color-danger: var(--danger);
+
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "Fraunces", Georgia, "Times New Roman", serif;
+  --font-script: "Dancing Script", cursive;
+
+  --radius-sm: 0.5rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.25rem;
+  --radius-2xl: 1.5rem;
+
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --duration-fast: 150ms;
+  --duration-normal: 250ms;
+  --duration-slow: 400ms;
+}
