@@ -27,16 +27,4 @@ export async function createProduct(formData) {
   return res.data.data?.product ?? res.data.product;
 }
 
-export async function updateProduct(id, formData) {
-  const res = await API.put(`/products/${id}`, formData, {
-    headers: { "Content-Type": "multipart/form-data" },
-  });
-  return res.data.data?.product ?? res.data.product;
-}
-
-export async function deleteProduct(id) {
-  const res = await API.delete(`/products/${id}`);
-  return res.data;
-}
-
 export { fallbackProducts };

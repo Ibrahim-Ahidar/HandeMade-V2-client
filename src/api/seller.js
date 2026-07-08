@@ -34,13 +34,3 @@ export async function getSellerStats() {
     };
   }
 }
-
-export async function getSellerProducts() {
-  const res = await API.get("/seller/products");
-  return res.data.data?.products ?? res.data.products ?? [];
-}
-
-export async function getSellerOrders() {
-  const res = await API.get("/seller/orders");
-  return res.data.data?.orders ?? res.data.orders ?? [];
-}

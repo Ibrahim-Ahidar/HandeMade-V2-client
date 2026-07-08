@@ -12,7 +12,7 @@ import { refreshAccessToken, setupAuthInterceptors, syncAccessToken } from "../a
 import { getMe } from "../api/users";
 import { logout as logoutRequest } from "../services/auth";
 
-export const AuthContext = createContext();
+const AuthContext = createContext();
 
 /** Proactive refresh before the 15m access token expires. */
 const ACCESS_TOKEN_REFRESH_MS = 13 * 60 * 1000;

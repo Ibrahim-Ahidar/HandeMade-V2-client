@@ -15,39 +15,14 @@ export const appNavLinks = [
 
 export const adminNavLinks = [{ to: "/admin", label: "Dashboard" }];
 
-export const MARKETPLACE_PATH_PREFIXES = [
-  "/products",
-  "/product/",
-  "/cart",
-  "/sell",
-  "/seller",
-  "/profile",
-  "/contact",
-];
-
 export const DEFAULT_AUTH_REDIRECT = "/products";
 export const DEFAULT_ADMIN_REDIRECT = "/admin";
-
-export function isMarketplacePath(path) {
-  if (!path) return false;
-  return MARKETPLACE_PATH_PREFIXES.some(
-    (prefix) => path === prefix || path.startsWith(prefix)
-  );
-}
 
 export function getAuthRedirectPath(user, from) {
   if (user?.role === "admin") return DEFAULT_ADMIN_REDIRECT;
   if (from && from !== "/login" && from !== "/signup") return from;
   return DEFAULT_AUTH_REDIRECT;
 }
-
-export const guestCommandActions = [
-  { id: "home", label: "Go to Home", path: "/Home", keywords: "home landing" },
-  { id: "about", label: "About HandeMade", path: "/about", keywords: "story mission" },
-  { id: "contact", label: "Contact Us", path: "/contact", keywords: "support help" },
-  { id: "login", label: "Log in", path: "/login", keywords: "sign in auth" },
-  { id: "signup", label: "Sign up", path: "/signup", keywords: "register create account" },
-];
 
 export const appCommandActions = [
   { id: "products", label: "Browse Products", path: "/products", keywords: "shop marketplace" },
