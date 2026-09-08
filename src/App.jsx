@@ -12,7 +12,7 @@ import NotFound from "./pages/notFound";
 import { CartProvider } from "./hooks/CartContext";
 import { ThemeProvider } from "./hooks/ThemeContext";
 import ScrollToTop from "./components/ScrollToTop";
-import Loader from "./components/Loader";
+import AppOverlay from "./components/AppOverlay";
 import { AppShell } from "./components/layout";
 import { ToastProvider } from "./components/ui";
 import "./styles/App.css";
@@ -31,64 +31,61 @@ import RequireAuth from "./components/RequireAuth.jsx";
 import RequireAdmin from "./components/RequireAdmin.jsx";
 import BlockAdminFromMarketplace from "./components/BlockAdminFromMarketplace.jsx";
 import RedirectIfAuth from "./components/RedirectIfAuth.jsx";
-import { useAuth } from "./providers/AuthProvider.jsx";
 import { RecoveryProvider } from "./providers/RecoveryProvider.jsx";
+import { BusyProvider } from "./context/BusyContext.jsx";
 
 function App() {
-  const auth = useAuth();
-
-  if (auth.status === "loading") {
-    return <Loader />;
-  }
-
   return (
     <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
       <ThemeProvider>
         <ToastProvider>
           <CartProvider>
             <RecoveryProvider>
-              <ScrollToTop />
-              <Routes>
-                {/* Auth — no shell */}
-                <Route element={<RedirectIfAuth />}>
-                  <Route path="/signup" element={<Signup />} />
-                  <Route path="/login" element={<Login />} />
-                  <Route path="/forgot-password" element={<ForgotPassword />} />
-                </Route>
-                <Route element={<RequireEmail />}>
-                  <Route path="/verify-code" element={<VerifyCode />} />
-                </Route>
-                <Route element={<RequireSignupEmail />}>
-                  <Route path="/verify-signup-code" element={<VerifySignupCode />} />
-                </Route>
-                <Route element={<RequireResetToken />}>
-                  <Route path="/reset-password" element={<ResetPassword />} />
-                </Route>
-
-                {/* App shell */}
-                <Route element={<AppShell />}>
-                  <Route path="/" element={<HomeRoute />} />
-                  <Route path="/Home" element={<HomeRoute />} />
-                  <Route path="/about" element={<About />} />
-                  <Route path="/contact" element={<Contact />} />
-
-                  <Route element={<RequireAuth />}>
-                    <Route element={<RequireAdmin />}>
-                      <Route path="/admin" element={<Admin />} />
-                    </Route>
-                    <Route element={<BlockAdminFromMarketplace />}>
-                      <Route path="/products" element={<Products />} />
-                      <Route path="/product/:id" element={<ProductDetail />} />
-                      <Route path="/cart" element={<Cart />} />
-                      <Route path="/sell" element={<Sell />} />
-                      <Route path="/seller" element={<Seller />} />
-                      <Route path="/profile" element={<Profile />} />
-                    </Route>
+              <BusyProvider>
+                <ScrollToTop />
+                <AppOverlay />
+                <Routes>
+                  {/* Auth — no shell */}
+                  <Route element={<RedirectIfAuth />}>
+                    <Route path="/signup" element={<Signup />} />
+                    <Route path="/login" element={<Login />} />
+                    <Route path="/forgot-password" element={<ForgotPassword />} />
+                  </Route>
+                  <Route element={<RequireEmail />}>
+                    <Route path="/verify-code" element={<VerifyCode />} />
+                  </Route>
+                  <Route element={<RequireSignupEmail />}>
+                    <Route path="/verify-signup-code" element={<VerifySignupCode />} />
+                  </Route>
+                  <Route element={<RequireResetToken />}>
+                    <Route path="/reset-password" element={<ResetPassword />} />
                   </Route>
 
-                  <Route path="*" element={<NotFound />} />
-                </Route>
-              </Routes>
+                  {/* App shell */}
+                  <Route element={<AppShell />}>
+                    <Route path="/" element={<HomeRoute />} />
+                    <Route path="/Home" element={<HomeRoute />} />
+                    <Route path="/about" element={<About />} />
+                    <Route path="/contact" element={<Contact />} />
+
+                    <Route element={<RequireAuth />}>
+                      <Route element={<RequireAdmin />}>
+                        <Route path="/admin" element={<Admin />} />
+                      </Route>
+                      <Route element={<BlockAdminFromMarketplace />}>
+                        <Route path="/products" element={<Products />} />
+                        <Route path="/product/:id" element={<ProductDetail />} />
+                        <Route path="/cart" element={<Cart />} />
+                        <Route path="/sell" element={<Sell />} />
+                        <Route path="/seller" element={<Seller />} />
+                        <Route path="/profile" element={<Profile />} />
+                      </Route>
+                    </Route>
+
+                    <Route path="*" element={<NotFound />} />
+                  </Route>
+                </Routes>
+              </BusyProvider>
             </RecoveryProvider>
           </CartProvider>
         </ToastProvider>

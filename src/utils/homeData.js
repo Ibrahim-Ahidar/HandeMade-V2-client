@@ -35,4 +35,26 @@ export const homeStats = {
   countries: "38",
 };
 
+export function getCategoryMix(productList, limit = 4) {
+  const counts = new Map();
+  for (const product of productList) {
+    counts.set(product.category, (counts.get(product.category) || 0) + 1);
+  }
+  const total = productList.length || 1;
+  return [...counts.entries()]
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, limit)
+    .map(([slug, count]) => ({
+      slug,
+      count,
+      percent: Math.round((count / total) * 100),
+    }));
+}
+
+export function getHeroProducts(productList, limit = 2) {
+  const featured = productList.filter((p) => p.featured);
+  const source = featured.length >= limit ? featured : productList;
+  return source.slice(0, limit);
+}
+
 export { fallbackProducts as products };

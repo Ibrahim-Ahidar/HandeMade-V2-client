@@ -19,7 +19,7 @@ function ArtisanCard({ artisan, productCount, sampleImage, className, to = "/pro
       as={Link}
       to={to}
       className={cn(
-        "group overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:shadow-[var(--shadow-elevated)]",
+        "group min-w-0 overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:shadow-[var(--shadow-elevated)]",
         className
       )}
     >
@@ -37,7 +37,7 @@ function ArtisanCard({ artisan, productCount, sampleImage, className, to = "/pro
           </div>
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
-        <div className="absolute bottom-3 left-3 flex items-center gap-2">
+        <div className="absolute bottom-3 start-3 flex items-center gap-2">
           <Avatar src={artisan.avatar} name={artisan.name} size="sm" />
           <div>
             <p className="text-sm font-semibold text-white">{artisan.name}</p>

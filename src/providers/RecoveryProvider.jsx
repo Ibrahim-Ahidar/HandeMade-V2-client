@@ -1,14 +1,22 @@
 /* eslint-disable react-refresh/only-export-components */
-import { createContext, useContext, useState, useEffect } from "react";
+import { createContext, useContext, useState } from "react";
 
 const RecoveryContext = createContext();
 
 export const useRecovery = () => useContext(RecoveryContext);
 
+function readStored(key) {
+  try {
+    return sessionStorage.getItem(key);
+  } catch {
+    return null;
+  }
+}
+
 export const RecoveryProvider = ({ children }) => {
-  const [email, setEmailState] = useState(null);
-  const [resetToken, setResetTokenState] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [email, setEmailState] = useState(() => readStored("email"));
+  const [resetToken, setResetTokenState] = useState(() => readStored("resetToken"));
+  const [loading, setLoading] = useState(false);
 
   const setEmail = (value) => {
     setEmailState(value);
@@ -37,16 +45,6 @@ export const RecoveryProvider = ({ children }) => {
     sessionStorage.removeItem("resetToken");
     sessionStorage.removeItem("recoveryFlow");
   };
-
-  useEffect(() => {
-    const storedEmail = sessionStorage.getItem("email");
-    const storedToken = sessionStorage.getItem("resetToken");
-
-    if (storedEmail) setEmailState(storedEmail);
-    if (storedToken) setResetTokenState(storedToken);
-
-    setLoading(false);
-  }, []);
 
   return (
     <RecoveryContext.Provider

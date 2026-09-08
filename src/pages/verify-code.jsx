@@ -2,6 +2,8 @@ import { useState, useRef } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { verifyCode } from "../services/auth";
 import { useRecovery } from "../providers/RecoveryProvider";
+import { useBusy } from "../context/BusyContext";
+import { useI18n } from "../context/I18nContext";
 import AuthLayout from "../components/layout/AuthLayout";
 import { Button, useToast } from "../components/ui";
 import { cn } from "../utils/cn";
@@ -17,6 +19,8 @@ export default function VerifyCode() {
   const refs = useRef([]);
   const navigate = useNavigate();
   const { setResetToken, email } = useRecovery();
+  const { startBusy, stopBusy } = useBusy();
+  const { t } = useI18n();
   const { toast } = useToast();
 
   const filled = code.every((c) => c !== "");
@@ -25,6 +29,7 @@ export default function VerifyCode() {
     e.preventDefault();
     setError("");
     setLoading(true);
+    startBusy(t("loader.verifying"));
 
     try {
       const data = await verifyCode(email, code.join(""));
@@ -36,6 +41,7 @@ export default function VerifyCode() {
       toast(message, "error");
     } finally {
       setLoading(false);
+      stopBusy();
     }
   };
 

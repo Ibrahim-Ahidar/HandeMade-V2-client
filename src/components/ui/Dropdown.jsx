@@ -22,7 +22,7 @@ function Dropdown({ trigger, items, align = "right", className }) {
         <div
           className={cn(
             "absolute top-full z-50 mt-2 min-w-[10rem] overflow-hidden rounded-xl border border-border bg-bg-elevated py-1 shadow-[var(--shadow-elevated)]",
-            align === "right" ? "right-0" : "left-0"
+            align === "right" ? "end-0" : "start-0"
           )}
           role="menu"
         >
@@ -35,7 +35,7 @@ function Dropdown({ trigger, items, align = "right", className }) {
                 item.onClick?.();
                 setOpen(false);
               }}
-              className="flex w-full items-center gap-2 px-4 py-2 text-left text-sm text-text-primary hover:bg-bg-muted"
+              className="flex w-full items-center gap-2 px-4 py-2 text-start text-sm text-text-primary hover:bg-bg-muted"
             >
               {item.icon}
               {item.label}

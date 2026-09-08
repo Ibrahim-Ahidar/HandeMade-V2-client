@@ -9,20 +9,24 @@ import {
   useState,
 } from "react";
 import { refreshAccessToken, setupAuthInterceptors, syncAccessToken } from "../api/axios";
+import { wakeBackend } from "../api/wake";
 import { getMe } from "../api/users";
 import { logout as logoutRequest } from "../services/auth";
+import { readSessionHint, writeSessionHint } from "../utils/sessionHint";
 
 const AuthContext = createContext();
 
 /** Proactive refresh before the 15m access token expires. */
 const ACCESS_TOKEN_REFRESH_MS = 13 * 60 * 1000;
 
-const INIT_REFRESH_MAX_ATTEMPTS = 3;
-const INIT_REFRESH_RETRY_MS = 200;
+const INIT_REFRESH_MAX_ATTEMPTS = 5;
+const INIT_REFRESH_RETRY_MS = 2000;
 
 function isRetriableRefreshError(error) {
   if (!error) return false;
   if (error.code === "ERR_CANCELED" || error.message === "canceled") return true;
+  const status = error.response?.status;
+  if (status === 429 || status === 502 || status === 503 || status === 504) return true;
   return !error.response;
 }
 
@@ -31,6 +35,12 @@ export const AuthProvider = ({ children }) => {
   const [accessToken, setAccessToken] = useState(null);
   const [user, setUser] = useState(null);
   const [userLoading, setUserLoading] = useState(false);
+  const [sessionHint, setSessionHint] = useState(() => readSessionHint());
+
+  const persistSessionHint = useCallback((on) => {
+    writeSessionHint(on);
+    setSessionHint(Boolean(on));
+  }, []);
 
   const accessTokenRef = useRef(accessToken);
   accessTokenRef.current = accessToken;
@@ -48,10 +58,11 @@ export const AuthProvider = ({ children }) => {
         setAccessToken(null);
         setUser(null);
         setUserLoading(false);
+        persistSessionHint(false);
         setStatus("unauthenticated");
       },
     });
-  }, []);
+  }, [persistSessionHint]);
 
   const fetchUserProfile = useCallback(async () => {
     setUserLoading(true);
@@ -71,6 +82,8 @@ export const AuthProvider = ({ children }) => {
     let isMounted = true;
 
     const initAuth = async () => {
+      wakeBackend();
+
       for (let attempt = 0; attempt < INIT_REFRESH_MAX_ATTEMPTS; attempt += 1) {
         try {
           const token = await refreshAccessToken();
@@ -80,6 +93,7 @@ export const AuthProvider = ({ children }) => {
             syncAccessToken(null);
             setAccessToken(null);
             setUser(null);
+            persistSessionHint(false);
             setStatus("unauthenticated");
             return;
           }
@@ -97,12 +111,14 @@ export const AuthProvider = ({ children }) => {
             syncAccessToken(null);
             setAccessToken(null);
             setUser(null);
+            persistSessionHint(false);
             setStatus("unauthenticated");
             return;
           } finally {
             if (isMounted) setUserLoading(false);
           }
 
+          persistSessionHint(true);
           setStatus("authenticated");
           return;
         } catch (error) {
@@ -118,6 +134,7 @@ export const AuthProvider = ({ children }) => {
           syncAccessToken(null);
           setAccessToken(null);
           setUser(null);
+          persistSessionHint(false);
           setStatus("unauthenticated");
           return;
         }
@@ -129,7 +146,7 @@ export const AuthProvider = ({ children }) => {
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [persistSessionHint]);
 
   useEffect(() => {
     if (status !== "authenticated") return undefined;
@@ -141,6 +158,7 @@ export const AuthProvider = ({ children }) => {
           syncAccessToken(null);
           setAccessToken(null);
           setUser(null);
+          persistSessionHint(false);
           setStatus("unauthenticated");
           return;
         }
@@ -152,18 +170,19 @@ export const AuthProvider = ({ children }) => {
     }, ACCESS_TOKEN_REFRESH_MS);
 
     return () => clearInterval(intervalId);
-  }, [status]);
+  }, [status, persistSessionHint]);
 
   const setAuthenticated = useCallback((token, authUser = null) => {
     syncAccessToken(token);
     setAccessToken(token);
+    persistSessionHint(true);
     setStatus("authenticated");
     if (authUser) {
       skipNextUserFetchRef.current = true;
       setUser(authUser);
       setUserLoading(false);
     }
-  }, []);
+  }, [persistSessionHint]);
 
   useEffect(() => {
     if (status === "unauthenticated") {
@@ -210,8 +229,9 @@ export const AuthProvider = ({ children }) => {
     setAccessToken(null);
     setUser(null);
     setUserLoading(false);
+    persistSessionHint(false);
     setStatus("unauthenticated");
-  }, []);
+  }, [persistSessionHint]);
 
   const authValue = useMemo(
     () => ({
@@ -219,12 +239,13 @@ export const AuthProvider = ({ children }) => {
       accessToken,
       user,
       userLoading,
+      sessionHint,
       isAdmin: user?.role === "admin",
       setAuthenticated,
       refreshUser: fetchUserProfile,
       logout,
     }),
-    [status, accessToken, user, userLoading, setAuthenticated, fetchUserProfile, logout]
+    [status, accessToken, user, userLoading, sessionHint, setAuthenticated, fetchUserProfile, logout]
   );
 
   return <AuthContext.Provider value={authValue}>{children}</AuthContext.Provider>;

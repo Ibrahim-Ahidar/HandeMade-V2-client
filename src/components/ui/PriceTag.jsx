@@ -1,8 +1,10 @@
 import { memo } from "react";
 import { cn } from "../../utils/cn";
 import { formatPrice } from "../../utils/formatPrice";
+import { useI18n } from "../../context/I18nContext";
 
 function PriceTag({ price, originalPrice, size = "md", className }) {
+  const { locale } = useI18n();
   const sizes = {
     sm: "text-base",
     md: "text-xl",
@@ -14,11 +16,11 @@ function PriceTag({ price, originalPrice, size = "md", className }) {
   return (
     <div className={cn("flex items-baseline gap-2", className)}>
       <span className={cn("font-semibold text-text-primary", sizes[size])}>
-        {formatPrice(price)}
+        {formatPrice(price, "USD", locale)}
       </span>
       {hasDiscount && (
         <span className="text-sm text-text-secondary line-through">
-          {formatPrice(originalPrice)}
+          {formatPrice(originalPrice, "USD", locale)}
         </span>
       )}
     </div>

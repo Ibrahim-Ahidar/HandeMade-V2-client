@@ -2,6 +2,8 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useRecovery } from "../providers/RecoveryProvider";
 import { resetPassword } from "../services/auth";
+import { useBusy } from "../context/BusyContext";
+import { useI18n } from "../context/I18nContext";
 import AuthLayout from "../components/layout/AuthLayout";
 import { Button, Input, useToast } from "../components/ui";
 
@@ -11,6 +13,8 @@ export default function ResetPassword() {
   const [submitting, setSubmitting] = useState(false);
   const navigate = useNavigate();
   const { resetToken, setEmail, setResetToken, setLoading } = useRecovery();
+  const { startBusy, stopBusy } = useBusy();
+  const { t } = useI18n();
   const { toast } = useToast();
 
   const valid = password.length >= 8 && password === confirm;
@@ -21,6 +25,7 @@ export default function ResetPassword() {
     if (!valid) return;
 
     setSubmitting(true);
+    startBusy(t("loader.working"));
     try {
       setLoading(true);
       await resetPassword(resetToken, password);
@@ -35,6 +40,7 @@ export default function ResetPassword() {
     } finally {
       setSubmitting(false);
       setLoading(false);
+      stopBusy();
     }
   };
 

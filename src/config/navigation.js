@@ -1,19 +1,45 @@
-export const MARKETING_PATHS = ["/Home", "/about", "/contact"];
+export const MARKETING_PATHS = ["/", "/Home", "/about", "/contact"];
+
+export const AUTH_PUBLIC_PATHS = [
+  "/login",
+  "/signup",
+  "/forgot-password",
+  "/verify-code",
+  "/verify-signup-code",
+  "/reset-password",
+];
+
+/** Routes that must not render until a session is confirmed or rejected. */
+export function isSessionGatedPath(pathname) {
+  if (MARKETING_PATHS.includes(pathname) || AUTH_PUBLIC_PATHS.includes(pathname)) {
+    return false;
+  }
+  return (
+    pathname === "/products" ||
+    pathname === "/cart" ||
+    pathname === "/sell" ||
+    pathname === "/seller" ||
+    pathname === "/profile" ||
+    pathname === "/admin" ||
+    pathname.startsWith("/product/")
+  );
+}
 
 export const guestNavLinks = [
-  { to: "/Home", label: "Home" },
-  { to: "/about", label: "About" },
-  { to: "/contact", label: "Contact" },
+  { to: "/Home", hash: "#discover", labelKey: "nav.discover" },
+  { to: "/Home", hash: "#sell", labelKey: "nav.sell" },
+  { to: "/Home", hash: "#how-it-works", labelKey: "nav.howItWorks" },
+  { to: "/about", labelKey: "nav.about" },
 ];
 
 export const appNavLinks = [
-  { to: "/products", label: "Products" },
-  { to: "/sell", label: "Sell" },
-  { to: "/seller", label: "Dashboard" },
-  { to: "/contact", label: "Contact" },
+  { to: "/products", labelKey: "nav.products" },
+  { to: "/sell", labelKey: "nav.sell" },
+  { to: "/seller", labelKey: "nav.dashboard" },
+  { to: "/contact", labelKey: "nav.contact" },
 ];
 
-export const adminNavLinks = [{ to: "/admin", label: "Dashboard" }];
+export const adminNavLinks = [{ to: "/admin", labelKey: "nav.dashboard" }];
 
 export const DEFAULT_AUTH_REDIRECT = "/products";
 export const DEFAULT_ADMIN_REDIRECT = "/admin";
@@ -42,13 +68,19 @@ export const adminCommandActions = [
   },
 ];
 
-export const guestFooterExplore = [
-  { to: "/Home", label: "Home" },
-  { to: "/about", label: "About" },
-  { to: "/contact", label: "Contact" },
+export const guestFooterMarketplace = [
+  { to: "/Home#discover", labelKey: "nav.discover" },
+  { to: "/Home#sell", labelKey: "nav.sell" },
+];
+
+export const guestFooterLearn = [
+  { to: "/Home#how-it-works", labelKey: "footer.howItWorks" },
+  { to: "/Home#faq", labelKey: "footer.faq" },
+  { to: "/about", labelKey: "nav.about" },
 ];
 
 export const guestFooterAccount = [
-  { to: "/login", label: "Log in" },
-  { to: "/signup", label: "Sign up" },
+  { to: "/login", labelKey: "nav.login" },
+  { to: "/signup", labelKey: "nav.signup" },
+  { to: "/contact", labelKey: "nav.contact" },
 ];

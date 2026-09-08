@@ -4,6 +4,8 @@ import { verifySignupCode } from "../services/auth";
 import { useRecovery } from "../providers/RecoveryProvider";
 import { useAuth } from "../providers/AuthProvider";
 import { usePostAuthNavigate } from "../hooks/usePostAuthNavigate";
+import { useBusy } from "../context/BusyContext";
+import { useI18n } from "../context/I18nContext";
 import AuthLayout from "../components/layout/AuthLayout";
 import { Button, useToast } from "../components/ui";
 import { cn } from "../utils/cn";
@@ -20,6 +22,8 @@ export default function VerifySignupCode() {
   const { email, clearRecovery } = useRecovery();
   const { setAuthenticated } = useAuth();
   const goAfterAuth = usePostAuthNavigate();
+  const { startBusy, stopBusy } = useBusy();
+  const { t } = useI18n();
   const { toast } = useToast();
 
   const filled = code.every((c) => c !== "");
@@ -28,6 +32,7 @@ export default function VerifySignupCode() {
     e.preventDefault();
     setError("");
     setLoading(true);
+    startBusy(t("loader.creatingAccount"));
 
     try {
       const res = await verifySignupCode(email, code.join(""));
@@ -41,6 +46,7 @@ export default function VerifySignupCode() {
       toast(message, "error");
     } finally {
       setLoading(false);
+      stopBusy();
     }
   };
 

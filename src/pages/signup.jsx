@@ -4,6 +4,8 @@ import { signup as signupService, GoogleSignup as GoogleSignupService } from "..
 import { useAuth } from "../providers/AuthProvider";
 import { useRecovery } from "../providers/RecoveryProvider";
 import { usePostAuthNavigate } from "../hooks/usePostAuthNavigate";
+import { useBusy } from "../context/BusyContext";
+import { useI18n } from "../context/I18nContext";
 import AuthLayout from "../components/layout/AuthLayout";
 import GoogleAuthButton from "../components/features/GoogleAuthButton";
 import { Button, Input, useToast } from "../components/ui";
@@ -17,6 +19,8 @@ export default function Signup() {
   const goAfterAuth = usePostAuthNavigate();
   const { setAuthenticated } = useAuth();
   const { setEmail, clearRecovery } = useRecovery();
+  const { startBusy, stopBusy } = useBusy();
+  const { t } = useI18n();
   const { toast } = useToast();
 
   const [form, setForm] = useState({ email: "", username: "", password: "" });
@@ -59,6 +63,7 @@ export default function Signup() {
     const password = form.password.trim();
 
     setSubmitting(true);
+    startBusy(t("loader.sendingCode"));
     try {
       clearRecovery();
       await signupService({ email, username, password });
@@ -78,16 +83,20 @@ export default function Signup() {
       }
     } finally {
       setSubmitting(false);
+      stopBusy();
     }
   };
 
   const handleGoogleSignup = async (res) => {
+    startBusy(t("loader.creatingAccount"));
     try {
       const data = await GoogleSignupService(res);
       setAuthenticated(data.accessToken ?? data.token, data.user);
       goAfterAuth(data.user);
     } catch {
       toast("Google sign-up failed", "error");
+    } finally {
+      stopBusy();
     }
   };
 

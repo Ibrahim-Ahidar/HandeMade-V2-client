@@ -5,9 +5,24 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  gap: 16px;
-  background: var(--bg-primary);
+  padding: 24px;
+  background: color-mix(in srgb, var(--bg-primary) 38%, transparent);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
   z-index: 9999;
+}
+
+.loader-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  min-width: min(100%, 280px);
+  padding: 24px 28px;
+  border-radius: 16px;
+  background: color-mix(in srgb, var(--bg-elevated) 88%, transparent);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-elevated);
 }
 
 .spinner {
@@ -20,10 +35,20 @@
 }
 
 .loader-label {
-  font-size: 13px;
-  font-weight: 500;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  letter-spacing: 0.01em;
+  text-align: center;
+}
+
+.loader-hint {
+  max-width: 260px;
+  font-size: 12px;
+  line-height: 1.45;
+  font-weight: 400;
   color: var(--text-secondary);
-  letter-spacing: 0.02em;
+  text-align: center;
 }
 
 @keyframes spin {

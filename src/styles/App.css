@@ -26,6 +26,14 @@ body {
   font-family: var(--font-script);
 }
 
+html[dir="rtl"] body {
+  font-family: "Cairo", var(--font-sans);
+}
+
+html[dir="rtl"] .font-serif {
+  font-family: "Cairo", var(--font-serif);
+}
+
 * {
   box-sizing: border-box;
 }
